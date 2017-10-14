@@ -7,8 +7,8 @@
     <ProjectGuid>{207ACD27-E06A-464B-809F-8E9EC6BB9CF4}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>YouPipe</RootNamespace>
-    <AssemblyName>YouPipe</AssemblyName>
+    <RootNamespace>PopOut</RootNamespace>
+    <AssemblyName>PopOut</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
