@@ -17,7 +17,7 @@ namespace YouPipe.Player
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public string MyTitle { get; set; }
-		public string VideoAddress { get; set; } = "http://google.com";
+		public string VideoAddress { get; set; } = "default.html";
 
 		public Visibility ControlsVisible { get; set; } = Visibility.Collapsed; // FIX
 
@@ -50,6 +50,16 @@ namespace YouPipe.Player
 			}
 		}
 
+		public void PlayFromQueue(VideoInfo video)
+		{
+			if (PlayList?.Count > 0)
+			{
+				PlayList.Remove(video);
+
+				PlayVideo(video);
+			}
+		}
+
 		private void PlayVideo(VideoInfo video)
 		{
 			MyTitle = video.Title;
@@ -57,7 +67,7 @@ namespace YouPipe.Player
 
 		private void PlayVideo(string videoUrl)
 		{
-			var address = videoUrl.Replace("watch?v=", "embed/") + "?version=3&autoplay=1";
+			var address = videoUrl.Replace("watch?v=", "embed/") + "?version=3&autoplay=1&enablejsapi=1";
 			cefBrowser.Load(address);
 		}
 
@@ -65,14 +75,14 @@ namespace YouPipe.Player
 		{
 			ControlsVisible = Visibility.Visible;
 			txtVideoUrl.Visibility = Visibility.Visible;
-			grdPlayList.Visibility = Visibility.Visible;
+			//grdPlayList.Visibility = Visibility.Visible;
 		}
 
 		public void HideUI()
 		{
 			ControlsVisible = Visibility.Collapsed;
 			txtVideoUrl.Visibility = Visibility.Collapsed;
-			grdPlayList.Visibility = Visibility.Collapsed;
+			//grdPlayList.Visibility = Visibility.Collapsed;
 		}
 
 		#endregion
@@ -108,7 +118,7 @@ namespace YouPipe.Player
 			{
 				var video = listPlayList.SelectedItem as VideoInfo;
 
-				PlayVideo(video);
+				PlayFromQueue(video);
 			}
 		}
 

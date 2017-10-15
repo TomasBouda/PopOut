@@ -10,8 +10,8 @@
 		AllowsTransparency="True"
 		ResizeMode="CanResizeWithGrip"
 		WindowStartupLocation="CenterScreen"
-		Height="306.393" Width="449.262" Deactivated="Window_Deactivated">
-	<Grid >
+		Height="325.109" Width="535.354" Deactivated="Window_Deactivated" Topmost="True" Icon="/PopOut.Player;component/icon.ico">
+	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="Auto" />
@@ -23,6 +23,8 @@
 
 		<TextBox Name="txtVideoUrl"
 			PreviewMouseDown="TextBox_MouseDown" 
+			MouseEnter="txtVideoUrl_MouseEnter" 
+			MouseLeave="txtVideoUrl_MouseLeave"
 			KeyUp="TextBox_KeyUp"
 			Height="25"
 			Grid.Row="0"
@@ -31,23 +33,31 @@
 			Background="Black" 
 			Foreground="White" 
 			BorderBrush="Black" 
-			Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" MouseEnter="txtVideoUrl_MouseEnter" MouseLeave="txtVideoUrl_MouseLeave" FontSize="14"
+			Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 		 
+			FontSize="14"
 			/>
 
 		<cefSharp:ChromiumWebBrowser 
 			x:Name="cefBrowser"
 			Grid.Row="1"
-			Address="{Binding VideoAddress}" MouseEnter="cefBrowser_MouseEnter" MouseLeave="cefBrowser_MouseLeave" MouseDown="cefBrowser_MouseDown" />
+			Address="{Binding VideoAddress}" 
+			MouseEnter="cefBrowser_MouseEnter" 
+			MouseLeave="cefBrowser_MouseLeave" 
+			MouseDown="cefBrowser_MouseDown" />
 
-
-		<Grid Grid.Row="1" Name="grdPlayList" Width="200" Grid.Column="1" Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" MouseLeave="grdPlayList_MouseLeave" MouseEnter="grdPlayList_MouseEnter">
+		<Grid Grid.Row="1" 
+			  Name="grdPlayList" 
+			  Width="200" 
+			  Grid.Column="1" 
+			  Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 
+			  MouseLeave="grdPlayList_MouseLeave" 
+			  MouseEnter="grdPlayList_MouseEnter">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
-
 
 			<ListBox Grid.Row="0"
 					 Background="Black"
