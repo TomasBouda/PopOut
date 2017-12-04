@@ -22,58 +22,71 @@
 			<RowDefinition Height="1*" />
 		</Grid.RowDefinitions>
 
-		<TextBox Name="txtVideoUrl"
-			PreviewMouseDown="TextBox_MouseDown" 
-			MouseEnter="txtVideoUrl_MouseEnter" 
-			MouseLeave="txtVideoUrl_MouseLeave"
-			KeyUp="TextBox_KeyUp"
-			Height="25"
-			Grid.Row="0"
-			Grid.ColumnSpan="2" 
-			TextWrapping="Wrap"
-			Background="Black" 
-			Foreground="White" 
-			BorderBrush="Black" 
-			Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 		 
-			FontSize="14"
-			/>
+        <Grid
+            Grid.Row="0" 
+            Grid.ColumnSpan="2"
+            Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 
+            MouseEnter="txtVideoUrl_MouseEnter" 
+			MouseLeave="txtVideoUrl_MouseLeave" 
+            HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="25" />
+            </Grid.ColumnDefinitions>
 
-		<cefSharp:ChromiumWebBrowser 
+            <TextBox Name="txtVideoUrl"
+			    PreviewMouseDown="TextBox_MouseDown" 
+			    MouseEnter="txtVideoUrl_MouseEnter" 
+			    MouseLeave="txtVideoUrl_MouseLeave"
+			    KeyUp="TextBox_KeyUp"
+			    Height="25"
+			    Grid.Column="0"
+			    Grid.ColumnSpan="2" 
+			    TextWrapping="Wrap"
+			    Background="Black" 
+			    Foreground="White" 
+			    BorderBrush="Black" 
+			    Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 
+			    FontSize="14"
+			    />
+        </Grid>
+
+        <cefSharp:ChromiumWebBrowser 
 			x:Name="cefBrowser"
 			Grid.Row="1"
 			Address="{Binding VideoAddress}"
 			MouseEnter="cefBrowser_MouseEnter" 
 			MouseLeave="cefBrowser_MouseLeave" 
 			MouseDown="cefBrowser_MouseDown"
-            FrameLoadEnd="cefBrowser_FrameLoadEnd"/>
+            FrameLoadEnd="cefBrowser_FrameLoadEnd">
+        </cefSharp:ChromiumWebBrowser>
 
-		<Grid Grid.Row="1" 
+        <Grid Grid.Row="1" 
 			  Name="grdPlayList" 
 			  Width="200" 
 			  Grid.Column="1" 
 			  Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 
 			  MouseLeave="grdPlayList_MouseLeave" 
 			  MouseEnter="grdPlayList_MouseEnter">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-			</Grid.ColumnDefinitions>
-			<Grid.RowDefinitions>
-				<RowDefinition Height="*" />
-			</Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-			<ListBox Grid.Row="0"
+            <ListBox Grid.Row="0"
 					 Background="Black"
 					 x:Name="listPlayList"
 					 ItemsSource="{Binding PlayList}" 
 					 MouseDoubleClick="ListBox_MouseDoubleClick">
-				<ListBox.ItemTemplate>
-					<DataTemplate>
-						<TextBlock Text="{Binding Title}">
-						</TextBlock>
-					</DataTemplate>
-				</ListBox.ItemTemplate>
-			</ListBox>
-		</Grid>
-
-	</Grid>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Title}">
+                        </TextBlock>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Grid>
 </Window>

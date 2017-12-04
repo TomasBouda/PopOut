@@ -24,11 +24,6 @@ namespace YouPipe.Player
         private const string LANDING_PAGE = "default.html";
         private bool _showLP = true;
 
-		public string MyTitle { get; set; }
-        public string VideoAddress { get; set; } = "default.html";
-		public Visibility ControlsVisible { get; set; } = Visibility.Collapsed;
-		public ObservableCollection<VideoInfo> PlayList { get; set; } = new ObservableCollection<VideoInfo>();
-
         private PlayerViewModel VM { get; set; }
 
 		public MainWindow()
@@ -40,45 +35,6 @@ namespace YouPipe.Player
 		}
 
 		#region Public Methods
-
-		public void PlayOrQueue(string youtubeUrl)
-		{
-			//IEnumerable<VideoInfo> videoInfos = DownloadUrlResolver.GetDownloadUrls(youtubeUrl);
-			//var video = videoInfos.OrderByDescending(v => v.Resolution).FirstOrDefault();
-
-			PlayVideo(youtubeUrl);
-		}
-
-		public void PlayFromQueue()
-		{
-			if (PlayList?.Count > 0)
-			{
-				var video = PlayList.FirstOrDefault();
-
-				PlayVideo(video);
-			}
-		}
-
-		public void PlayFromQueue(VideoInfo video)
-		{
-			if (PlayList?.Count > 0)
-			{
-				PlayList.Remove(video);
-
-				PlayVideo(video);
-			}
-		}
-
-		private void PlayVideo(VideoInfo video)
-		{
-			MyTitle = video.Title;
-		}
-
-		private void PlayVideo(string videoUrl)
-		{
-            var address = videoUrl.Replace("watch?v=", "embed/") + "?version=3&autoplay=1&enablejsapi=1";
-            cefBrowser.Load(address);
-        }
 
 		#endregion
 
@@ -102,7 +58,7 @@ namespace YouPipe.Player
 		{
 			if (e.Key == Key.Enter)
 			{
-				PlayOrQueue(txtVideoUrl.Text);
+				VM.PlayOrQueue(txtVideoUrl.Text);
 			}
 		}
 
@@ -116,9 +72,9 @@ namespace YouPipe.Player
 		{
 			if (listPlayList.SelectedItem != null)
 			{
-				var video = listPlayList.SelectedItem as VideoInfo;
+				var video = listPlayList.SelectedItem as Video;
 
-				PlayFromQueue(video);
+                VM.PlayFromQueue(video);
 			}
 		}
 
@@ -126,7 +82,6 @@ namespace YouPipe.Player
 		{
             VM.ShowControls();
 		}
-
 
 		private void cefBrowser_MouseLeave(object sender, MouseEventArgs e)
 		{
