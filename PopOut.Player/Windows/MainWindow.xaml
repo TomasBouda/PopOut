@@ -10,7 +10,8 @@
 		AllowsTransparency="True"
 		ResizeMode="CanResizeWithGrip"
 		WindowStartupLocation="CenterScreen"
-		Height="325.109" Width="535.354" Deactivated="Window_Deactivated" Topmost="True" Icon="/PopOut.Player;component/icon.ico">
+		Height="325.109" Width="535.354" Deactivated="Window_Deactivated" Topmost="True" Icon="/PopOut.Player;component/icon.ico"
+        Loaded="Window_Loaded">
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
@@ -40,10 +41,11 @@
 		<cefSharp:ChromiumWebBrowser 
 			x:Name="cefBrowser"
 			Grid.Row="1"
-			Address="{Binding VideoAddress}" 
+			Address="{Binding VideoAddress}"
 			MouseEnter="cefBrowser_MouseEnter" 
 			MouseLeave="cefBrowser_MouseLeave" 
-			MouseDown="cefBrowser_MouseDown" />
+			MouseDown="cefBrowser_MouseDown"
+            FrameLoadEnd="cefBrowser_FrameLoadEnd"/>
 
 		<Grid Grid.Row="1" 
 			  Name="grdPlayList" 
