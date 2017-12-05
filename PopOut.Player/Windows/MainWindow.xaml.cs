@@ -21,8 +21,7 @@ namespace YouPipe.Player
 		public event PropertyChangedEventHandler PropertyChanged;
 
         private HotKey _hotKey;
-        private const string LANDING_PAGE = "default.html";
-        private bool _showLP = true;
+        
 
         private PlayerViewModel VM { get; set; }
 
@@ -78,44 +77,6 @@ namespace YouPipe.Player
 			}
 		}
 
-		private void cefBrowser_MouseEnter(object sender, MouseEventArgs e)
-		{
-            VM.ShowControls();
-		}
-
-		private void cefBrowser_MouseLeave(object sender, MouseEventArgs e)
-		{
-            VM.HideControls();
-        }
-
-		private void cefBrowser_MouseDown(object sender, MouseButtonEventArgs e)
-		{
-			if (e.ChangedButton == MouseButton.Left)
-			{
-				this.DragMove();
-			}
-		}
-
-		private void txtVideoUrl_MouseEnter(object sender, MouseEventArgs e)
-		{
-            VM.ShowControls();
-        }
-
-		private void txtVideoUrl_MouseLeave(object sender, MouseEventArgs e)
-		{
-            VM.HideControls();
-        }
-
-		private void grdPlayList_MouseLeave(object sender, MouseEventArgs e)
-		{
-            VM.HideControls();
-        }
-
-		private void grdPlayList_MouseEnter(object sender, MouseEventArgs e)
-		{
-            VM.ShowControls();
-        }
-
         private void OnHotKeyHandler(HotKey hotKey)
         {
             if(WindowState == WindowState.Normal)
@@ -134,16 +95,6 @@ namespace YouPipe.Player
         }
 
         #endregion
-
-        private void cefBrowser_FrameLoadEnd(object sender, FrameLoadEndEventArgs e)
-        {
-            string htmlFilePath = $"{AppDomain.CurrentDomain.BaseDirectory}{LANDING_PAGE}";
-            if (File.Exists(htmlFilePath) && _showLP)
-            {
-                var html = File.ReadAllText(htmlFilePath);
-                cefBrowser.LoadHtml(html, "http://example/");
-                _showLP = false;
-            }
-        }
+        
     }
 }

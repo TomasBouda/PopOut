@@ -4,6 +4,7 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
 		mc:Ignorable="d"
 		Title="{Binding MyTitle}" 
 		WindowStyle="None"
@@ -26,8 +27,6 @@
             Grid.Row="0" 
             Grid.ColumnSpan="2"
             Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 
-            MouseEnter="txtVideoUrl_MouseEnter" 
-			MouseLeave="txtVideoUrl_MouseLeave" 
             HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -35,9 +34,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBox Name="txtVideoUrl"
-			    PreviewMouseDown="TextBox_MouseDown" 
-			    MouseEnter="txtVideoUrl_MouseEnter" 
-			    MouseLeave="txtVideoUrl_MouseLeave"
+			    PreviewMouseDown="TextBox_MouseDown"
 			    KeyUp="TextBox_KeyUp"
 			    Height="25"
 			    Grid.Column="0"
@@ -49,25 +46,35 @@
 			    Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 
 			    FontSize="14"
 			    />
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseEnter">
+                    <i:InvokeCommandAction Command="{Binding ShowControlsCmd}" />
+                </i:EventTrigger>
+                <i:EventTrigger EventName="MouseLeave">
+                    <i:InvokeCommandAction Command="{Binding HideControlsCmd}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
         </Grid>
 
         <cefSharp:ChromiumWebBrowser 
 			x:Name="cefBrowser"
 			Grid.Row="1"
-			Address="{Binding VideoAddress}"
-			MouseEnter="cefBrowser_MouseEnter" 
-			MouseLeave="cefBrowser_MouseLeave" 
-			MouseDown="cefBrowser_MouseDown"
-            FrameLoadEnd="cefBrowser_FrameLoadEnd">
+			Address="{Binding VideoAddress}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseEnter">
+                    <i:InvokeCommandAction Command="{Binding ShowControlsCmd}" />
+                </i:EventTrigger>
+                <i:EventTrigger EventName="MouseLeave">
+                    <i:InvokeCommandAction Command="{Binding HideControlsCmd}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
         </cefSharp:ChromiumWebBrowser>
 
         <Grid Grid.Row="1" 
 			  Name="grdPlayList" 
 			  Width="200" 
 			  Grid.Column="1" 
-			  Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 
-			  MouseLeave="grdPlayList_MouseLeave" 
-			  MouseEnter="grdPlayList_MouseEnter">
+			  Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
@@ -87,6 +94,14 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseEnter">
+                    <i:InvokeCommandAction Command="{Binding ShowControlsCmd}" />
+                </i:EventTrigger>
+                <i:EventTrigger EventName="MouseLeave">
+                    <i:InvokeCommandAction Command="{Binding HideControlsCmd}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
         </Grid>
     </Grid>
 </Window>

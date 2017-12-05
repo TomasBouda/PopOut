@@ -17,7 +17,6 @@ namespace YouPipe.Player
         public App()
         {
             var settings = new CefSettings();
-
             Cef.Initialize(settings);
         }
     }

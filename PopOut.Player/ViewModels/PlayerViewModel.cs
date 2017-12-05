@@ -1,20 +1,31 @@
-﻿using CefSharp.Wpf;
+﻿using CefSharp;
+using CefSharp.Wpf;
 using PopOut.Player.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using TomLabs.Shadowgem.Extensions.String;
 using YoutubeExtractor;
 
 namespace PopOut.Player.ViewModels
 {
     public class PlayerViewModel : BaseViewModel, INotifyPropertyChanged
     {
+        public ICommand ShowControlsCmd { get; set; }
+        public ICommand HideControlsCmd { get; set; }
+
+        private const string LANDING_PAGE = "default.html";
+        private readonly string PLAYER_HTML;
+        private bool _showLP = true;
+
         private ChromiumWebBrowser Browser { get; set; }
         public bool IsPlaying { get; set; }
 
@@ -25,15 +36,34 @@ namespace PopOut.Player.ViewModels
 
         public PlayerViewModel(ChromiumWebBrowser browser)
         {
+            PLAYER_HTML = File.ReadAllText("PLayer.html");
+
             Browser = browser;
+            var boundObject = new BoundObject();
+            browser.RegisterJsObject("bound", boundObject);
+            Browser.FrameLoadEnd += Browser_FrameLoadEnd;
+
+            ShowControlsCmd = new RelayCommand(ShowControls);
+            HideControlsCmd = new RelayCommand(HideControls);
         }
 
-        public void ShowControls()
+        private void Browser_FrameLoadEnd(object sender, CefSharp.FrameLoadEndEventArgs e)
+        {
+            string htmlFilePath = $"{AppDomain.CurrentDomain.BaseDirectory}{LANDING_PAGE}";
+            if (File.Exists(htmlFilePath) && _showLP)
+            {
+                var html = File.ReadAllText(htmlFilePath);
+                Browser.LoadHtml(PLAYER_HTML, "http://example/");
+                _showLP = false;
+            }
+        }
+
+        private void ShowControls()
         {
             ControlsVisible = Visibility.Visible;
         }
 
-        public void HideControls()
+        private void HideControls()
         {
             ControlsVisible = Visibility.Collapsed;
         }
@@ -81,8 +111,11 @@ namespace PopOut.Player.ViewModels
 
         private void PlayVideo(string videoUrl)
         {
-            var address = videoUrl.Replace("watch?v=", "embed/") + "?version=3&autoplay=1&enablejsapi=1";
-            Browser.Load(address);
+            var videoId = Regex.Match(videoUrl, @"v=(.*)").Groups[1].Value;
+            var playerHtml = PLAYER_HTML.Replace("$VIDEO_ID$", videoId);
+            Browser.LoadHtml(playerHtml);
+
+            Browser.ExecuteScriptAsync($"player.loadVideoById({videoId});");
         }
     }
 }
