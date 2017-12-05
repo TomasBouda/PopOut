@@ -22,12 +22,10 @@ namespace PopOut.Player.ViewModels
         public ICommand ShowControlsCmd { get; set; }
         public ICommand HideControlsCmd { get; set; }
 
-        private const string LANDING_PAGE = "default.html";
         private readonly string PLAYER_HTML;
-        private bool _showLP = true;
 
         private ChromiumWebBrowser Browser { get; set; }
-        public bool IsPlaying { get; set; }
+        private PlayerBoundObject BoundObject { get; set; }
 
         public string MyTitle { get; set; }
         public string VideoAddress { get; set; } = "default.html";
@@ -39,8 +37,8 @@ namespace PopOut.Player.ViewModels
             PLAYER_HTML = File.ReadAllText("PLayer.html");
 
             Browser = browser;
-            var boundObject = new BoundObject();
-            browser.RegisterJsObject("bound", boundObject);
+            BoundObject = new PlayerBoundObject();
+            browser.RegisterJsObject("bound", BoundObject);
             Browser.FrameLoadEnd += Browser_FrameLoadEnd;
 
             ShowControlsCmd = new RelayCommand(ShowControls);
@@ -49,13 +47,7 @@ namespace PopOut.Player.ViewModels
 
         private void Browser_FrameLoadEnd(object sender, CefSharp.FrameLoadEndEventArgs e)
         {
-            string htmlFilePath = $"{AppDomain.CurrentDomain.BaseDirectory}{LANDING_PAGE}";
-            if (File.Exists(htmlFilePath) && _showLP)
-            {
-                var html = File.ReadAllText(htmlFilePath);
-                Browser.LoadHtml(PLAYER_HTML, "http://example/");
-                _showLP = false;
-            }
+            Browser.LoadHtml(PLAYER_HTML, "http://example/");
         }
 
         private void ShowControls()
@@ -70,10 +62,9 @@ namespace PopOut.Player.ViewModels
 
         public void PlayOrQueue(string youtubeUrl)
         {
-            if (PlayList?.Count == 0 && !IsPlaying)
+            if (PlayList?.Count == 0 /*&& BoundObject.CurrentState != YouTubePlayerState.PLAYING*/)
             {
                 PlayVideo(youtubeUrl);
-                IsPlaying = true;
             }
             else
             {
@@ -111,11 +102,14 @@ namespace PopOut.Player.ViewModels
 
         private void PlayVideo(string videoUrl)
         {
-            var videoId = Regex.Match(videoUrl, @"v=(.*)").Groups[1].Value;
-            var playerHtml = PLAYER_HTML.Replace("$VIDEO_ID$", videoId);
-            Browser.LoadHtml(playerHtml);
+            if (Browser.CanExecuteJavascriptInMainFrame)
+            {
+                var videoId = Regex.Match(videoUrl, @"v=(.*)").Groups[1].Value;
+                var playerHtml = PLAYER_HTML.Replace("$VIDEO_ID$", videoId);
+                Browser.LoadHtml(playerHtml);
 
-            Browser.ExecuteScriptAsync($"player.loadVideoById({videoId});");
+                Browser.ExecuteScriptAsync($"loadVideoById({videoId});");
+            }
         }
     }
 }

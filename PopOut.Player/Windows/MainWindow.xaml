@@ -83,7 +83,6 @@
             </Grid.RowDefinitions>
 
             <ListBox Grid.Row="0"
-					 Background="Black"
 					 x:Name="listPlayList"
 					 ItemsSource="{Binding PlayList}" 
 					 MouseDoubleClick="ListBox_MouseDoubleClick">
