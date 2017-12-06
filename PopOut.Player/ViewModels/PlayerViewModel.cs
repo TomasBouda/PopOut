@@ -23,6 +23,7 @@ namespace PopOut.Player.ViewModels
         public ICommand HideControlsCmd { get; set; }
 
         private readonly string PLAYER_HTML;
+        private bool _playerInitialized = false;
 
         private ChromiumWebBrowser Browser { get; set; }
         private PlayerBoundObject BoundObject { get; set; }
@@ -34,7 +35,7 @@ namespace PopOut.Player.ViewModels
 
         public PlayerViewModel(ChromiumWebBrowser browser)
         {
-            PLAYER_HTML = File.ReadAllText("PLayer.html");
+            PLAYER_HTML = File.ReadAllText("Player.html");
 
             Browser = browser;
             BoundObject = new PlayerBoundObject();
@@ -47,7 +48,11 @@ namespace PopOut.Player.ViewModels
 
         private void Browser_FrameLoadEnd(object sender, CefSharp.FrameLoadEndEventArgs e)
         {
-            Browser.LoadHtml(PLAYER_HTML, "http://example/");
+            if(!_playerInitialized)
+            {
+                Browser.LoadHtml(PLAYER_HTML, "http://example/");
+                _playerInitialized = true;
+            }
         }
 
         private void ShowControls()
@@ -62,7 +67,7 @@ namespace PopOut.Player.ViewModels
 
         public void PlayOrQueue(string youtubeUrl)
         {
-            if (PlayList?.Count == 0 /*&& BoundObject.CurrentState != YouTubePlayerState.PLAYING*/)
+            if (PlayList?.Count == 0 && BoundObject.CurrentState == YouTubePlayerState.UNSTARTED || BoundObject.CurrentState == YouTubePlayerState.ENDED)
             {
                 PlayVideo(youtubeUrl);
             }
@@ -108,7 +113,7 @@ namespace PopOut.Player.ViewModels
                 var playerHtml = PLAYER_HTML.Replace("$VIDEO_ID$", videoId);
                 Browser.LoadHtml(playerHtml);
 
-                Browser.ExecuteScriptAsync($"loadVideoById({videoId});");
+                Browser.ExecuteScriptAsync($"player.loadVideoById({videoId});");
             }
         }
     }

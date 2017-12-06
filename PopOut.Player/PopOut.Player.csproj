@@ -97,7 +97,7 @@
     <Compile Include="Video.cs" />
     <Compile Include="ViewModels\Base\BaseViewModel.cs" />
     <Compile Include="ViewModels\Base\RelayCommand.cs" />
-    <Compile Include="ViewModels\BoudObject.cs" />
+    <Compile Include="ViewModels\PlayerBoundObject.cs" />
     <Compile Include="ViewModels\PlayerViewModel.cs" />
     <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
