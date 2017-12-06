@@ -1,16 +1,11 @@
-﻿using CefSharp;
-using PopOut.Player;
+﻿using PopOut.Player;
 using PopOut.Player.Players;
 using PopOut.Player.ViewModels;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using YoutubeExtractor;
 
 namespace YouPipe.Player
 {
@@ -21,31 +16,31 @@ namespace YouPipe.Player
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 
-        private HotKey _hotKey;
-        
+		private HotKey _hotKey;
 
-        private PlayerViewModel VM { get; set; }
+
+		private PlayerViewModel VM { get; set; }
 
 		public MainWindow()
 		{
 			InitializeComponent();
 
-            VM = new PlayerViewModel(cefBrowser);
-            this.DataContext = VM;
+			VM = new PlayerViewModel(cefBrowser);
+			this.DataContext = VM;
 		}
 
 		#region Public Methods
 
 		#endregion
 
-        private void Init()
-        {
-            _hotKey = new HotKey(Key.X, KeyModifier.Shift | KeyModifier.Ctrl, OnHotKeyHandler);
-        }
+		private void Init()
+		{
+			_hotKey = new HotKey(Key.X, KeyModifier.Shift | KeyModifier.Ctrl, OnHotKeyHandler);
+		}
 
-        #region Event Handlers
+		#region Event Handlers
 
-        private void TextBox_MouseDown(object sender, MouseButtonEventArgs e)
+		private void TextBox_MouseDown(object sender, MouseButtonEventArgs e)
 		{
 			if (e.ChangedButton == MouseButton.Left)
 			{
@@ -74,32 +69,34 @@ namespace YouPipe.Player
 			{
 				var video = listPlayList.SelectedItem as Video;
 
-                VM.Player.PlayFromQueue(video);
+				VM.Player.PlayFromQueue(video);
 			}
 		}
 
-        private void OnHotKeyHandler(HotKey hotKey)
-        {
-            if(WindowState == WindowState.Normal)
-            {
-                WindowState = WindowState.Minimized;
-            }
-            else
-            {
-                WindowState = WindowState.Normal;
-            }
-        }
+		private void OnHotKeyHandler(HotKey hotKey)
+		{
+			if (WindowState == WindowState.Normal)
+			{
+				WindowState = WindowState.Minimized;
+				VM.Player.Pause();
+			}
+			else
+			{
+				WindowState = WindowState.Normal;
+				VM.Player.Play();
+			}
+		}
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            Init();
-        }
+		private void Window_Loaded(object sender, RoutedEventArgs e)
+		{
+			Init();
+		}
 
-        #endregion
+		#endregion
 
-        private void Rectangle_MouseEnter(object sender, MouseEventArgs e)
-        {
+		private void Rectangle_MouseEnter(object sender, MouseEventArgs e)
+		{
 
-        }
-    }
+		}
+	}
 }

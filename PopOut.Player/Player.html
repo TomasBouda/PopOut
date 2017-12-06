@@ -47,15 +47,19 @@
             bound.onPlayerStateChange(event.data);
         }
 
-        function stopVideo() {
+        function play() {
+            player.playVideo();
+		}
+
+		function pause() {
+			player.pauseVideo();
+		}
+
+        function stop() {
             player.stopVideo();
         }
-
-        function playVideo() {
-            player.playVideo();
-        }
-
-        function loadVideoById(id) {
+		
+        function loadById(id) {
             player.loadVideoById(id);
         }
     </script>

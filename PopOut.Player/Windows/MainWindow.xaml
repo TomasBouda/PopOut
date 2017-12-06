@@ -4,7 +4,7 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
-        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+		xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
 		mc:Ignorable="d"
 		Title="{Binding MyTitle}" 
 		WindowStyle="None"
@@ -12,7 +12,7 @@
 		ResizeMode="CanResizeWithGrip"
 		WindowStartupLocation="CenterScreen"
 		Height="325.109" Width="535.354" Deactivated="Window_Deactivated" Topmost="True" Icon="/PopOut.Player;component/icon.ico"
-        Loaded="Window_Loaded">
+		Loaded="Window_Loaded">
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
@@ -23,88 +23,88 @@
 			<RowDefinition Height="1*" />
 		</Grid.RowDefinitions>
 
-        <Grid
-            Grid.Row="0" 
-            Grid.ColumnSpan="2"
-            Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 
-            HorizontalAlignment="Stretch">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="25" />
-            </Grid.ColumnDefinitions>
+		<Grid
+			Grid.Row="0" 
+			Grid.ColumnSpan="2"
+			Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 
+			HorizontalAlignment="Stretch">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="25" />
+			</Grid.ColumnDefinitions>
 
-            <TextBox Name="txtVideoUrl"
-			    PreviewMouseDown="TextBox_MouseDown"
-			    KeyUp="TextBox_KeyUp"
-			    Height="25"
-			    Grid.Column="0"
-			    Grid.ColumnSpan="2" 
-			    TextWrapping="Wrap"
-			    Background="Black" 
-			    Foreground="White" 
-			    BorderBrush="Black" 
-			    Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 
-			    FontSize="14"
-			    />
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseEnter">
-                    <i:InvokeCommandAction Command="{Binding ShowControlsCmd}" />
-                </i:EventTrigger>
-                <i:EventTrigger EventName="MouseLeave">
-                    <i:InvokeCommandAction Command="{Binding HideControlsCmd}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </Grid>
+			<TextBox Name="txtVideoUrl"
+				PreviewMouseDown="TextBox_MouseDown"
+				KeyUp="TextBox_KeyUp"
+				Height="25"
+				Grid.Column="0"
+				Grid.ColumnSpan="2" 
+				TextWrapping="Wrap"
+				Background="Black" 
+				Foreground="White" 
+				BorderBrush="Black" 
+				Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 
+				FontSize="14"
+				/>
+			<i:Interaction.Triggers>
+				<i:EventTrigger EventName="MouseEnter">
+					<i:InvokeCommandAction Command="{Binding ShowControlsCmd}" />
+				</i:EventTrigger>
+				<i:EventTrigger EventName="MouseLeave">
+					<i:InvokeCommandAction Command="{Binding HideControlsCmd}" />
+				</i:EventTrigger>
+			</i:Interaction.Triggers>
+		</Grid>
 
-        <Grid Grid.Row="1">
-            <cefSharp:ChromiumWebBrowser 
+		<Grid Grid.Row="1">
+			<cefSharp:ChromiumWebBrowser 
 			x:Name="cefBrowser"
 			Grid.Row="1"
 			Address="{Binding VideoAddress}">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseEnter">
-                        <i:InvokeCommandAction Command="{Binding ShowControlsCmd}" />
-                    </i:EventTrigger>
-                    <i:EventTrigger EventName="MouseLeave">
-                        <i:InvokeCommandAction Command="{Binding HideControlsCmd}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </cefSharp:ChromiumWebBrowser>
-            <Rectangle Canvas.ZIndex="3" IsHitTestVisible="False" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="40" Canvas.Top="400" Canvas.Left="100" Fill="Red" MouseEnter="Rectangle_MouseEnter">
-            </Rectangle>
-        </Grid>
+				<i:Interaction.Triggers>
+					<i:EventTrigger EventName="MouseEnter">
+						<i:InvokeCommandAction Command="{Binding ShowControlsCmd}" />
+					</i:EventTrigger>
+					<i:EventTrigger EventName="MouseLeave">
+						<i:InvokeCommandAction Command="{Binding HideControlsCmd}" />
+					</i:EventTrigger>
+				</i:Interaction.Triggers>
+			</cefSharp:ChromiumWebBrowser>
+			<!--<Rectangle Canvas.ZIndex="3" IsHitTestVisible="False" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="40" Canvas.Top="400" Canvas.Left="100" Fill="Red" MouseEnter="Rectangle_MouseEnter">
+			</Rectangle>-->
+		</Grid>
 
-        <Grid Grid.Row="1" 
+		<Grid Grid.Row="1" 
 			  Name="grdPlayList" 
 			  Width="200" 
 			  Grid.Column="1" 
 			  Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
 
-            <ListBox Grid.Row="0"
+			<ListBox Grid.Row="0"
 					 x:Name="listPlayList"
-					 ItemsSource="{Binding PlayList}" 
+					 ItemsSource="{Binding Player.PlayList}" 
 					 MouseDoubleClick="ListBox_MouseDoubleClick">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Title}">
-                        </TextBlock>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseEnter">
-                    <i:InvokeCommandAction Command="{Binding ShowControlsCmd}" />
-                </i:EventTrigger>
-                <i:EventTrigger EventName="MouseLeave">
-                    <i:InvokeCommandAction Command="{Binding HideControlsCmd}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </Grid>
-    </Grid>
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding Title}">
+						</TextBlock>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+			<i:Interaction.Triggers>
+				<i:EventTrigger EventName="MouseEnter">
+					<i:InvokeCommandAction Command="{Binding ShowControlsCmd}" />
+				</i:EventTrigger>
+				<i:EventTrigger EventName="MouseLeave">
+					<i:InvokeCommandAction Command="{Binding HideControlsCmd}" />
+				</i:EventTrigger>
+			</i:Interaction.Triggers>
+		</Grid>
+	</Grid>
 </Window>
