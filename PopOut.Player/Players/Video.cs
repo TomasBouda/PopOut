@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PopOut.Player
+namespace PopOut.Player.Players
 {
     public class Video
     {

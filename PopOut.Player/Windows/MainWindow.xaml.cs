@@ -1,5 +1,6 @@
 ﻿using CefSharp;
 using PopOut.Player;
+using PopOut.Player.Players;
 using PopOut.Player.ViewModels;
 using System;
 using System.Collections.ObjectModel;
@@ -57,7 +58,7 @@ namespace YouPipe.Player
 		{
 			if (e.Key == Key.Enter)
 			{
-				VM.PlayOrQueue(txtVideoUrl.Text);
+				VM.Player.PlayOrQueue(txtVideoUrl.Text);
 			}
 		}
 
@@ -73,7 +74,7 @@ namespace YouPipe.Player
 			{
 				var video = listPlayList.SelectedItem as Video;
 
-                VM.PlayFromQueue(video);
+                VM.Player.PlayFromQueue(video);
 			}
 		}
 
@@ -95,6 +96,10 @@ namespace YouPipe.Player
         }
 
         #endregion
-        
+
+        private void Rectangle_MouseEnter(object sender, MouseEventArgs e)
+        {
+
+        }
     }
 }

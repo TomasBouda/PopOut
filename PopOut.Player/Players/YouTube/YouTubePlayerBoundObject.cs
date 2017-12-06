@@ -4,38 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PopOut.Player.ViewModels
+namespace PopOut.Player.Players.YouTube
 {
-    public enum YouTubePlayerState
-    {
-        UNSTARTED = -1,
-        ENDED = 0,
-        PLAYING = 1,
-        PAUSED = 2,
-        BUFFERING = 3,
-        CUED = 5
-    }
-
     public class PlayerBoundObject
     {
         public event EventHandler Playing;
         public event EventHandler Paused;
         public event EventHandler Ended;
 
-        public YouTubePlayerState CurrentState { get; set; }
+        public EYouTubePlayerState CurrentState { get; set; }
 
-        public void OnPlayerStateChange(YouTubePlayerState state)
+        public void OnPlayerStateChange(EYouTubePlayerState state)
         {
             CurrentState = state;
             switch (CurrentState)
             {
-                case YouTubePlayerState.PLAYING:
+                case EYouTubePlayerState.PLAYING:
                     Playing?.Invoke(this, new EventArgs());
                     break;
-                case YouTubePlayerState.PAUSED:
+                case EYouTubePlayerState.PAUSED:
                     Paused?.Invoke(this, new EventArgs());
                     break;
-                case YouTubePlayerState.ENDED:
+                case EYouTubePlayerState.ENDED:
                     Ended?.Invoke(this, new EventArgs());
                     break;
                 default: break;
