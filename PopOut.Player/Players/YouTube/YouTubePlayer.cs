@@ -2,6 +2,7 @@
 using CefSharp.Wpf;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,24 +10,22 @@ using YoutubeExtractor;
 
 namespace PopOut.Player.Players.YouTube
 {
-	public class YouTubePlayer : IVideoPlayer
+	public class YouTubePlayer : IVideoPlayer, INotifyPropertyChanged
 	{
-		private ChromiumWebBrowser Browser { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private ChromiumWebBrowser Browser { get; set; }
 		private PlayerBoundObject BoundObject { get; set; }
 
-		public EYouTubePlayerState State
-		{
-			get
-			{
-				return BoundObject?.CurrentState ?? EYouTubePlayerState.UNSTARTED;
-			}
-		}
+		public EYouTubePlayerState State => BoundObject?.CurrentState ?? EYouTubePlayerState.UNSTARTED;
 
-		private readonly string PLAYER_HTML;
+        public bool IsInitialized => (Browser?.CanExecuteJavascriptInMainFrame ?? false) && _playerInitialized;
+
+        private readonly string PLAYER_HTML;
 		private bool _playerInitialized = false;
 
-		public string Title { get; set; }
-		public ObservableCollection<Video> PlayList { get; set; } = new ObservableCollection<Video>();
+        public string Title { get; private set; } = "test";
+		public ObservableCollection<IVideo> PlayList { get; private set; } = new ObservableCollection<IVideo>();
 
 		public YouTubePlayer(ChromiumWebBrowser browser)
 		{
@@ -51,13 +50,11 @@ namespace PopOut.Player.Players.YouTube
 		{
 			if (PlayList?.Count == 0 && BoundObject.CurrentState == EYouTubePlayerState.UNSTARTED || BoundObject.CurrentState == EYouTubePlayerState.ENDED)
 			{
-				PlayVideo(youtubeUrl);
+				PlayVideo(new YouTubeVideo(youtubeUrl));
 			}
 			else
 			{
-				IEnumerable<VideoInfo> videoInfos = DownloadUrlResolver.GetDownloadUrls(youtubeUrl);
-				var video = videoInfos.OrderByDescending(v => v.Resolution).FirstOrDefault();
-				PlayList.Add(new Video { Title = video.Title, Url = youtubeUrl });
+				PlayList.Add(new YouTubeVideo(youtubeUrl));
 			}
 		}
 
@@ -65,7 +62,7 @@ namespace PopOut.Player.Players.YouTube
 		{
 			if (PlayList?.Count > 0)
 			{
-				var video = PlayList.FirstOrDefault();
+				var video = PlayList.FirstOrDefault() as YouTubeVideo;
 				PlayList.Remove(video);
 				PlayVideo(video);
 			}
@@ -80,7 +77,21 @@ namespace PopOut.Player.Players.YouTube
 			}
 		}
 
-		public void Pause()
+        private void PlayVideo(Video video)
+        {
+            if (Browser.CanExecuteJavascriptInMainFrame)
+            {
+                Title = video.Title;
+
+                var videoId = Regex.Match(video.Url, @"v=(.*)").Groups[1].Value;
+                var playerHtml = PLAYER_HTML.Replace("$VIDEO_ID$", videoId);
+                Browser.LoadHtml(playerHtml);
+
+                Browser.ExecuteScriptAsync($"loadById({videoId});");
+            }
+        }
+
+        public void Pause()
 		{
 			Browser.ExecuteScriptAsync($"pause();");
 		}
@@ -105,24 +116,6 @@ namespace PopOut.Player.Players.YouTube
 		public void Stop()
 		{
 			Browser.ExecuteScriptAsync($"stop();");
-		}
-
-		private void PlayVideo(Video video)
-		{
-			Title = video.Title;
-			PlayVideo(video.Url);
-		}
-
-		private void PlayVideo(string videoUrl)
-		{
-			if (Browser.CanExecuteJavascriptInMainFrame)
-			{
-				var videoId = Regex.Match(videoUrl, @"v=(.*)").Groups[1].Value;
-				var playerHtml = PLAYER_HTML.Replace("$VIDEO_ID$", videoId);
-				Browser.LoadHtml(playerHtml);
-
-				Browser.ExecuteScriptAsync($"loadById({videoId});");
-			}
 		}
 	}
 }

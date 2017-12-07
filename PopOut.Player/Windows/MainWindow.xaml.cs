@@ -17,8 +17,6 @@ namespace YouPipe.Player
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		private HotKey _hotKey;
-
-
 		private PlayerViewModel VM { get; set; }
 
 		public MainWindow()
@@ -28,10 +26,6 @@ namespace YouPipe.Player
 			VM = new PlayerViewModel(cefBrowser);
 			this.DataContext = VM;
 		}
-
-		#region Public Methods
-
-		#endregion
 
 		private void Init()
 		{
@@ -92,11 +86,11 @@ namespace YouPipe.Player
 			Init();
 		}
 
-		#endregion
+        private void Rectangle_MouseEnter(object sender, MouseEventArgs e)
+        {
 
-		private void Rectangle_MouseEnter(object sender, MouseEventArgs e)
-		{
+        }
 
-		}
-	}
+        #endregion
+    }
 }

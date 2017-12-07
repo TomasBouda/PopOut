@@ -1,8 +1,13 @@
-﻿namespace PopOut.Player.Players
+﻿using System.Collections.ObjectModel;
+
+namespace PopOut.Player.Players
 {
 	public interface IVideoPlayer
 	{
-		void PlayOrQueue(string videoUrl);
+        string Title { get; }
+        ObservableCollection<IVideo> PlayList { get; }
+
+        void PlayOrQueue(string videoUrl);
 		void PlayFromQueue(Video video);
 		void Pause();
 		void Play();

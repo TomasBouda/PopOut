@@ -6,7 +6,7 @@
 		xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
 		xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
 		mc:Ignorable="d"
-		Title="{Binding MyTitle}" 
+		Title="{Binding Player.Title}" 
 		WindowStyle="None"
 		AllowsTransparency="True"
 		ResizeMode="CanResizeWithGrip"
@@ -15,8 +15,8 @@
 		Loaded="Window_Loaded">
 	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*" />
-			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="*" MinWidth="100" />
+			<ColumnDefinition Width="Auto" MaxWidth="200" />
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto" />
@@ -40,9 +40,8 @@
 				Grid.Column="0"
 				Grid.ColumnSpan="2" 
 				TextWrapping="Wrap"
-				Background="Black" 
-				Foreground="White" 
-				BorderBrush="Black" 
+                     Cursor="SizeAll"
+				BorderBrush="LightBlue" 
 				Visibility="{Binding ControlsVisible, FallbackValue=Collapsed}" 
 				FontSize="14"
 				/>
@@ -88,13 +87,15 @@
 
 			<ListBox Grid.Row="0"
 					 x:Name="listPlayList"
+                     BorderBrush="LightBlue" 
 					 ItemsSource="{Binding Player.PlayList}" 
 					 MouseDoubleClick="ListBox_MouseDoubleClick">
 				<ListBox.ItemTemplate>
 					<DataTemplate>
-						<TextBlock Text="{Binding Title}">
-						</TextBlock>
-					</DataTemplate>
+                        <Viewbox>
+                            <TextBlock Text="{Binding Title}" FontSize="10"/>
+                        </Viewbox>
+                    </DataTemplate>
 				</ListBox.ItemTemplate>
 			</ListBox>
 			<i:Interaction.Triggers>
