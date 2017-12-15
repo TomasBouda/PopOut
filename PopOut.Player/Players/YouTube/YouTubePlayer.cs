@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using YoutubeExtractor;
 
 namespace PopOut.Player.Players.YouTube
@@ -13,6 +14,8 @@ namespace PopOut.Player.Players.YouTube
 	public class YouTubePlayer : IVideoPlayer, INotifyPropertyChanged
 	{
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public const string RGX_YOUTUBE_URL = "youtu(?:\\.be|be\\.com)/(?:.*v(?:/|=)|(?:.*/)?)(?<videoId>[a-zA-Z0-9-_]+)((?:[?|&](?:t=))(?<playAt>.*))?";
 
         private ChromiumWebBrowser Browser { get; set; }
 		private PlayerBoundObject BoundObject { get; set; }
@@ -83,7 +86,8 @@ namespace PopOut.Player.Players.YouTube
             {
                 Title = video.Title;
 
-                var videoId = Regex.Match(video.Url, @"v=(.*)").Groups[1].Value;
+                var videoId = Regex.Match(video.Url, RGX_YOUTUBE_URL).Groups["videoId"].Value;
+
                 var playerHtml = PLAYER_HTML.Replace("$VIDEO_ID$", videoId);
                 Browser.LoadHtml(playerHtml);
 
@@ -112,6 +116,24 @@ namespace PopOut.Player.Players.YouTube
 				Play();
 			}
 		}
+
+        public async Task<string> GetCurrentTime()
+        {
+            var task = Browser.GetMainFrame().EvaluateScriptAsync("getCurrentTime();", null);
+
+            await task.ContinueWith(t =>
+            {
+                if (!t.IsFaulted)
+                {
+                    var response = t.Result;
+                    return response.Success ? (response.Result ?? "null") : response.Message;
+                }
+
+                return null;
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+
+            return null;
+        }
 
 		public void Stop()
 		{

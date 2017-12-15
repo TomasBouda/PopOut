@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 namespace PopOut.Player.Players
 {
@@ -13,5 +14,6 @@ namespace PopOut.Player.Players
 		void Play();
 		void Toggle();
 		void Stop();
-	}
+        Task<string> GetCurrentTime();
+    }
 }

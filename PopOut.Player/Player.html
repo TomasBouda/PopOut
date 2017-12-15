@@ -42,7 +42,6 @@
             event.target.playVideo();
         }
 
-        var done = false;
         function onPlayerStateChange(event) {
             bound.onPlayerStateChange(event.data);
         }
@@ -57,6 +56,15 @@
 
         function stop() {
             player.stopVideo();
+            player.clearVideo();
+        }
+
+        function getCurrentTime() {
+            return player.getCurrentTime();
+        }
+
+        function seekTo(seconds, allowSeekAhead) {
+            player.playVideoAt(index);
         }
 		
         function loadById(id) {

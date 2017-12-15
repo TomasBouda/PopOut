@@ -7,7 +7,7 @@ using YoutubeExtractor;
 
 namespace PopOut.Player.Players
 {
-    public class Video : IVideo
+    public abstract class Video : IVideo
     {
         public string Title { get; set; }
         public string Url { get; set; }

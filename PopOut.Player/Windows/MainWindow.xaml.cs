@@ -3,6 +3,7 @@ using PopOut.Player.Players;
 using PopOut.Player.ViewModels;
 using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -92,5 +93,10 @@ namespace YouPipe.Player
         }
 
         #endregion
+
+        private async void Window_Closing(object sender, CancelEventArgs e)
+        {
+            var x = await VM.Player.GetCurrentTime();
+        }
     }
 }
