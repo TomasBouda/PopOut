@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using YoutubeExtractor;
-
-namespace PopOut.Player.Players
+﻿namespace PopOut.Player.Players
 {
-    public abstract class Video : IVideo
-    {
-        public string Title { get; set; }
-        public string Url { get; set; }
+	public abstract class Video : IVideo
+	{
+		public string Title { get; set; }
+		public string Url { get; set; }
+		public int PlayAt { get; set; }
 
-        public Video(string url, string title = null)
-        {
-            Url = url;
-            Title = title;
-        }
-    }
+		public Video(string url, string title = null)
+		{
+			Url = url;
+			Title = title;
+		}
+	}
 }

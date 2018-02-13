@@ -1,34 +1,35 @@
 ﻿using CefSharp;
 using CefSharp.Wpf;
+using PopOut.Player.ViewModels.Base;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using YoutubeExtractor;
 
 namespace PopOut.Player.Players.YouTube
 {
-	public class YouTubePlayer : IVideoPlayer, INotifyPropertyChanged
+	public class YouTubePlayer : BaseViewModel, IVideoPlayer, INotifyPropertyChanged
 	{
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public const string RGX_YOUTUBE_URL = "youtu(?:\\.be|be\\.com)/(?:.*v(?:/|=)|(?:.*/)?)(?<videoId>[a-zA-Z0-9-_]+)((?:[?|&](?:t=))(?<playAt>.*))?";
-
-        private ChromiumWebBrowser Browser { get; set; }
-		private PlayerBoundObject BoundObject { get; set; }
+		private ChromiumWebBrowser Browser { get; set; }
+		public PlayerBoundObject BoundObject { get; private set; }
 
 		public EYouTubePlayerState State => BoundObject?.CurrentState ?? EYouTubePlayerState.UNSTARTED;
 
-        public bool IsInitialized => (Browser?.CanExecuteJavascriptInMainFrame ?? false) && _playerInitialized;
+		public bool IsInitialized => (Browser?.CanExecuteJavascriptInMainFrame ?? false) && _playerInitialized;
+		public bool PreLoaded { get; private set; }
 
-        private readonly string PLAYER_HTML;
+		private readonly string PLAYER_HTML;
 		private bool _playerInitialized = false;
 
-        public string Title { get; private set; } = "test";
+		public IVideo CurrentVideo { get; private set; }
+		public int PlayAt { get; set; }
+		private bool _seek = false;
 		public ObservableCollection<IVideo> PlayList { get; private set; } = new ObservableCollection<IVideo>();
+
+		public Queue<Action> ActionsAfterPlay { get; set; } = new Queue<Action>();
 
 		public YouTubePlayer(ChromiumWebBrowser browser)
 		{
@@ -38,6 +39,8 @@ namespace PopOut.Player.Players.YouTube
 			BoundObject = new PlayerBoundObject();
 			browser.RegisterJsObject("bound", BoundObject);
 			Browser.FrameLoadEnd += Browser_FrameLoadEnd;
+
+			BoundObject.Playing += BoundObject_Playing;
 		}
 
 		private void Browser_FrameLoadEnd(object sender, CefSharp.FrameLoadEndEventArgs e)
@@ -51,7 +54,7 @@ namespace PopOut.Player.Players.YouTube
 
 		public void PlayOrQueue(string youtubeUrl)
 		{
-			if (PlayList?.Count == 0 && BoundObject.CurrentState == EYouTubePlayerState.UNSTARTED || BoundObject.CurrentState == EYouTubePlayerState.ENDED)
+			if (PlayList?.Count == 0 && (BoundObject.CurrentState == EYouTubePlayerState.UNSTARTED || BoundObject.CurrentState == EYouTubePlayerState.ENDED))
 			{
 				PlayVideo(new YouTubeVideo(youtubeUrl));
 			}
@@ -73,29 +76,39 @@ namespace PopOut.Player.Players.YouTube
 
 		public void PlayFromQueue(Video video)
 		{
-			if (PlayList?.Count > 0)
+			if (PlayList.Contains(video))
 			{
-				PlayList.Remove(video);
 				PlayVideo(video);
+				PlayList.Remove(video);
 			}
 		}
 
-        private void PlayVideo(Video video)
-        {
-            if (Browser.CanExecuteJavascriptInMainFrame)
-            {
-                Title = video.Title;
+		private void PlayVideo(Video video)
+		{
+			if (Browser.CanExecuteJavascriptInMainFrame)
+			{
+				var ytVideo = video as YouTubeVideo;
+				CurrentVideo = ytVideo;
 
-                var videoId = Regex.Match(video.Url, RGX_YOUTUBE_URL).Groups["videoId"].Value;
+				if (CurrentVideo.PlayAt > 0)
+				{
+					ActionsAfterPlay.Enqueue(() => SeekTo(CurrentVideo.PlayAt));
+				}
 
-                var playerHtml = PLAYER_HTML.Replace("$VIDEO_ID$", videoId);
-                Browser.LoadHtml(playerHtml);
+				if (!PreLoaded)
+				{
+					var playerHtml = PLAYER_HTML.Replace("$VIDEO_ID$", ytVideo.VideoId);
+					Browser.LoadHtml(playerHtml);
+					PreLoaded = true;
+				}
+				else
+				{
+					Browser.ExecuteScriptAsync($"loadById('{ytVideo.VideoId}');");
+				}
+			}
+		}
 
-                Browser.ExecuteScriptAsync($"loadById({videoId});");
-            }
-        }
-
-        public void Pause()
+		public void Pause()
 		{
 			Browser.ExecuteScriptAsync($"pause();");
 		}
@@ -103,6 +116,11 @@ namespace PopOut.Player.Players.YouTube
 		public void Play()
 		{
 			Browser.ExecuteScriptAsync($"play();");
+		}
+
+		public void Stop()
+		{
+			Browser.ExecuteScriptAsync($"stop();");
 		}
 
 		public void Toggle()
@@ -117,27 +135,35 @@ namespace PopOut.Player.Players.YouTube
 			}
 		}
 
-        public async Task<string> GetCurrentTime()
-        {
-            var task = Browser.GetMainFrame().EvaluateScriptAsync("getCurrentTime();", null);
-
-            await task.ContinueWith(t =>
-            {
-                if (!t.IsFaulted)
-                {
-                    var response = t.Result;
-                    return response.Success ? (response.Result ?? "null") : response.Message;
-                }
-
-                return null;
-            }, TaskScheduler.FromCurrentSynchronizationContext());
-
-            return null;
-        }
-
-		public void Stop()
+		public async Task<int> GetCurrentTime()
 		{
-			Browser.ExecuteScriptAsync($"stop();");
+			var task = Browser.GetMainFrame().EvaluateScriptAsync("getCurrentTime();", null);
+
+			await task.ContinueWith(t =>
+			{
+				if (!t.IsFaulted)
+				{
+					var response = t.Result;
+					return response.Success ? response.Result : -1;
+				}
+
+				return -1;
+			}, TaskScheduler.FromCurrentSynchronizationContext());
+
+			return -1;
+		}
+
+		public void SeekTo(int seconds)
+		{
+			Browser.ExecuteScriptAsync($"seekTo({seconds}, true);");
+		}
+
+		private void BoundObject_Playing(object sender, System.EventArgs e)
+		{
+			while (ActionsAfterPlay.Count > 0)
+			{
+				ActionsAfterPlay.Dequeue()?.Invoke();
+			}
 		}
 	}
 }

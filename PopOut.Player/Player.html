@@ -39,12 +39,17 @@
         }
 
         function onPlayerReady(event) {
-            event.target.playVideo();
+			bound.onPlayerReady();
+			event.target.playVideo();
         }
 
         function onPlayerStateChange(event) {
             bound.onPlayerStateChange(event.data);
-        }
+		}
+
+		function loadById(id) {
+			player.loadVideoById(id);
+		}
 
         function play() {
             player.playVideo();
@@ -64,11 +69,7 @@
         }
 
         function seekTo(seconds, allowSeekAhead) {
-            player.playVideoAt(index);
-        }
-		
-        function loadById(id) {
-            player.loadVideoById(id);
+			player.seekTo(seconds, allowSeekAhead);
         }
     </script>
 </body>

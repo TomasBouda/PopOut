@@ -1,9 +1,9 @@
 ﻿using PopOut.Player;
 using PopOut.Player.Players;
+using PopOut.Player.Properties;
 using PopOut.Player.ViewModels;
 using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -31,6 +31,11 @@ namespace YouPipe.Player
 		private void Init()
 		{
 			_hotKey = new HotKey(Key.X, KeyModifier.Shift | KeyModifier.Ctrl, OnHotKeyHandler);
+
+			Height = Settings.Default.WindowHeight;
+			Width = Settings.Default.WindowWidth;
+			Top = Settings.Default.WindowTop;
+			Left = Settings.Default.WindowLeft;
 		}
 
 		#region Event Handlers
@@ -73,11 +78,13 @@ namespace YouPipe.Player
 			if (WindowState == WindowState.Normal)
 			{
 				WindowState = WindowState.Minimized;
+				ShowInTaskbar = false;
 				VM.Player.Pause();
 			}
 			else
 			{
 				WindowState = WindowState.Normal;
+				ShowInTaskbar = true;
 				VM.Player.Play();
 			}
 		}
@@ -87,16 +94,17 @@ namespace YouPipe.Player
 			Init();
 		}
 
-        private void Rectangle_MouseEnter(object sender, MouseEventArgs e)
-        {
+		private async void Window_Closing(object sender, CancelEventArgs e)
+		{
+			Settings.Default.LastVideoUrl = VM.Player.CurrentVideo.Url;
+			Settings.Default.LastVideoSeekTo = await VM.Player.GetCurrentTime();
+			Settings.Default.WindowHeight = Height;
+			Settings.Default.WindowWidth = Width;
+			Settings.Default.WindowTop = Top;
+			Settings.Default.WindowLeft = Left;
+			Settings.Default.Save();
+		}
 
-        }
-
-        #endregion
-
-        private async void Window_Closing(object sender, CancelEventArgs e)
-        {
-            var x = await VM.Player.GetCurrentTime();
-        }
-    }
+		#endregion
+	}
 }
