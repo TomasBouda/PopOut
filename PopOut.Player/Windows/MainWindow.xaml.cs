@@ -1,12 +1,12 @@
-﻿using PopOut.Player;
-using PopOut.Player.Players;
-using PopOut.Player.Properties;
-using PopOut.Player.ViewModels;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using PopOut.Player;
+using PopOut.Player.Players;
+using PopOut.Player.Properties;
+using PopOut.Player.ViewModels;
 
 namespace YouPipe.Player
 {
@@ -31,11 +31,6 @@ namespace YouPipe.Player
 		private void Init()
 		{
 			_hotKey = new HotKey(Key.X, KeyModifier.Shift | KeyModifier.Ctrl, OnHotKeyHandler);
-
-			Height = Settings.Default.WindowHeight;
-			Width = Settings.Default.WindowWidth;
-			Top = Settings.Default.WindowTop;
-			Left = Settings.Default.WindowLeft;
 		}
 
 		#region Event Handlers
@@ -96,12 +91,8 @@ namespace YouPipe.Player
 
 		private async void Window_Closing(object sender, CancelEventArgs e)
 		{
-			Settings.Default.LastVideoUrl = VM.Player.CurrentVideo.Url;
+			Settings.Default.LastVideoUrl = VM.Player.CurrentVideo?.Url;
 			Settings.Default.LastVideoSeekTo = await VM.Player.GetCurrentTime();
-			Settings.Default.WindowHeight = Height;
-			Settings.Default.WindowWidth = Width;
-			Settings.Default.WindowTop = Top;
-			Settings.Default.WindowLeft = Left;
 			Settings.Default.Save();
 		}
 

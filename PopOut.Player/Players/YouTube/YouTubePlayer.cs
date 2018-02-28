@@ -1,13 +1,13 @@
-﻿using CefSharp;
-using CefSharp.Wpf;
-using PopOut.Player.ViewModels.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CefSharp;
+using CefSharp.Wpf;
+using PopOut.Player.ViewModels.Base;
 
 namespace PopOut.Player.Players.YouTube
 {
@@ -26,7 +26,6 @@ namespace PopOut.Player.Players.YouTube
 
 		public IVideo CurrentVideo { get; private set; }
 		public int PlayAt { get; set; }
-		private bool _seek = false;
 		public ObservableCollection<IVideo> PlayList { get; private set; } = new ObservableCollection<IVideo>();
 
 		public Queue<Action> ActionsAfterPlay { get; set; } = new Queue<Action>();
@@ -41,6 +40,7 @@ namespace PopOut.Player.Players.YouTube
 			Browser.FrameLoadEnd += Browser_FrameLoadEnd;
 
 			BoundObject.Playing += BoundObject_Playing;
+			BoundObject.Ended += BoundObject_Ended;
 		}
 
 		private void Browser_FrameLoadEnd(object sender, CefSharp.FrameLoadEndEventArgs e)
@@ -164,6 +164,11 @@ namespace PopOut.Player.Players.YouTube
 			{
 				ActionsAfterPlay.Dequeue()?.Invoke();
 			}
+		}
+
+		private void BoundObject_Ended(object sender, EventArgs e)
+		{
+			PlayFromQueue();
 		}
 	}
 }

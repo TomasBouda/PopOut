@@ -1,10 +1,10 @@
-﻿using CefSharp.Wpf;
+﻿using System.ComponentModel;
+using System.Windows;
+using System.Windows.Input;
+using CefSharp.Wpf;
 using PopOut.Player.Players;
 using PopOut.Player.Players.YouTube;
 using PopOut.Player.ViewModels.Base;
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Input;
 
 namespace PopOut.Player.ViewModels
 {

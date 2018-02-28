@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using TomLabs.Shadowgem.Extensions.String;
 using YoutubeExtractor;
 
 namespace PopOut.Player.Players.YouTube
 {
-	public class YouTubeVideo : Video, IVideo
+	public class YouTubeVideo : Video, IVideo, INotifyPropertyChanged
 	{
+		public event PropertyChangedEventHandler PropertyChanged;
+
 		public const string RGX_YOUTUBE_URL = "youtu(?:\\.be|be\\.com)/(?:.*v(?:/|=)|(?:.*/)?)(?<videoId>[a-zA-Z0-9-_]+)((?:[?|&](?:t=))(?<playAt>.*))?";
 
 		public string VideoId { get; set; }
@@ -17,13 +22,23 @@ namespace PopOut.Player.Players.YouTube
 		{
 			var match = Regex.Match(url, RGX_YOUTUBE_URL);
 			VideoId = match.Groups["videoId"].Value;
-			PlayAt = int.Parse(match.Groups["playAt"].Value.Replace("s", ""));
+			PlayAt = match.Groups["playAt"].Value.Replace("s", "").ToInt(0);
 
+			ResolveTitle();
+		}
+
+		public async void ResolveTitle()
+		{
 			try
 			{
-				IEnumerable<VideoInfo> videoInfos = DownloadUrlResolver.GetDownloadUrls(url);
-				var video = videoInfos.OrderByDescending(v => v.Resolution).FirstOrDefault();
-				Title = video.Title;
+				await Task.Run(() =>
+				{
+					IEnumerable<VideoInfo> videoInfos = DownloadUrlResolver.GetDownloadUrls($"http://www.youtube.com/watch?v={VideoId}");
+					var video = videoInfos.OrderByDescending(v => v.Resolution).FirstOrDefault();
+					Title = video.Title;
+
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Title)));
+				});
 			}
 			catch (Exception ex)
 			{
